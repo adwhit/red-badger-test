@@ -4,6 +4,21 @@ For fun, I tried to do it with zero dependencies. Usually for something with a C
 
 ## Usage
 
+You will need the Rust/Cargo toolchain, installable from [rustup.rs](http://rustup.rs).
+
+Run:
+
+```rust
+cargo run --release -- <PATH/TO/INPUT>
+```
+
+Test:
+
+```rust
+cargo test
+```
+
+Also try:
 ```rust
 cargo run --release -- test-input
 ```
