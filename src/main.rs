@@ -130,6 +130,17 @@ impl Display for Orientation {
 }
 
 impl Orientation {
+    fn parse(i: &str) -> Result<Self> {
+        let cmd = match i {
+            "N" => Orientation::North,
+            "E" => Orientation::East,
+            "S" => Orientation::South,
+            "W" => Orientation::West,
+            _ => return Err(format!("not a valid orientation: '{i}'"))?,
+        };
+        Ok(cmd)
+    }
+
     fn delta(&self) -> (i8, i8) {
         match self {
             Orientation::North => (0, 1),
@@ -160,19 +171,6 @@ impl Orientation {
     }
 }
 
-impl Orientation {
-    fn parse(i: &str) -> Result<Self> {
-        let cmd = match i {
-            "N" => Orientation::North,
-            "E" => Orientation::East,
-            "S" => Orientation::South,
-            "W" => Orientation::West,
-            _ => return Err(format!("not a valid orientation: '{i}'"))?,
-        };
-        Ok(cmd)
-    }
-}
-
 struct World {
     max_x: i8,
     max_y: i8,
@@ -191,7 +189,7 @@ impl World {
         })
     }
 
-    fn run(&mut self, mut robot: Robot, commands: &[Command]) -> Outcome {
+    fn run_robot(&mut self, mut robot: Robot, commands: &[Command]) -> Outcome {
         for c in commands {
             match c {
                 Command::Forward => {
@@ -261,7 +259,10 @@ impl Robot {
 fn run_input(input: &str) -> Result<()> {
     let input = parse_input(input)?;
     let (mut world, robots) = input.into_world()?;
-    let outcomes: Vec<_> = robots.into_iter().map(|(r, c)| world.run(r, &c)).collect();
+    let outcomes: Vec<_> = robots
+        .into_iter()
+        .map(|(r, c)| world.run_robot(r, &c))
+        .collect();
     for o in outcomes {
         print!("{} {} {}", o.final_x, o.final_y, o.final_orientation);
         if o.lost {
@@ -290,7 +291,10 @@ LLFFFLFLFL"#;
         let input = parse_input(input).unwrap();
         assert_eq!(input.robot_inputs.len(), 3);
         let (mut world, robots) = input.into_world().unwrap();
-        let outcomes: Vec<_> = robots.into_iter().map(|(r, c)| world.run(r, &c)).collect();
+        let outcomes: Vec<_> = robots
+            .into_iter()
+            .map(|(r, c)| world.run_robot(r, &c))
+            .collect();
         assert_eq!(
             outcomes,
             [
